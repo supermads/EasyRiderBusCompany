@@ -1,4 +1,5 @@
 import json
+import re
 
 
 def main():
@@ -10,6 +11,9 @@ def main():
         "stop_type": 0,
         "a_time": 0
     }
+    stop_type_options = ["S", "O", "F", ""]
+    stop_name_pattern = re.compile(r"[A-Z][a-z]+\s?\w+?\s?(Road|Avenue|Boulevard|Street)$")
+    a_time_pattern = re.compile(r"[0-2][0-9]:[0-5][0-9]$")
 
     bus_info = json.loads(input())
 
@@ -19,7 +23,6 @@ def main():
         stop_name = dict["stop_name"]
         next_stop = dict["next_stop"]
         stop_type = dict["stop_type"]
-        stop_type_options = ["S", "O", "F"]
         a_time = dict["a_time"]
 
         if not bus_id or type(bus_id) != int:
@@ -28,22 +31,23 @@ def main():
         if not stop_id or type(stop_id) != int:
             error_dict["stop_id"] += 1
 
-        if not stop_name or type(stop_name) != str:
+        if not stop_name or not re.match(stop_name_pattern, stop_name):
             error_dict["stop_name"] += 1
 
         if (not next_stop and next_stop != 0) or type(next_stop) != int:
             error_dict["next_stop"] += 1
 
-        if stop_type not in stop_type_options and stop_type != "":
+        if stop_type not in stop_type_options:
             error_dict["stop_type"] += 1
 
-        if not a_time or type(a_time) != str:
+        if not a_time or not re.match(a_time_pattern, a_time):
             error_dict["a_time"] += 1
 
-    total_errors = sum(list(error_dict.values()))
-    print(f"Type and required field validation: {total_errors} errors")
-    for key, value in error_dict.items():
-        print(f"{key}: {value}")
+    total_errors = sum([error_dict['stop_name'], error_dict['stop_type'], error_dict['a_time']])
+    print(f"Format validation: {total_errors} errors")
+    print(f"stop_name: {error_dict['stop_name']}")
+    print(f"stop_type: {error_dict['stop_type']}")
+    print(f"a_time: {error_dict['a_time']}")
 
 
 main()
