@@ -2,7 +2,7 @@ import json
 import re
 
 
-def main():
+def find_errors(bus_info):
     error_dict = {
         "bus_id": 0,
         "stop_id": 0,
@@ -14,8 +14,6 @@ def main():
     stop_type_options = ["S", "O", "F", ""]
     stop_name_pattern = re.compile(r"[A-Z][a-z]+\s?\w+?\s?(Road|Avenue|Boulevard|Street)$")
     a_time_pattern = re.compile(r"[0-2][0-9]:[0-5][0-9]$")
-
-    bus_info = json.loads(input())
 
     for dict in bus_info:
         bus_id = dict["bus_id"]
@@ -48,6 +46,24 @@ def main():
     print(f"stop_name: {error_dict['stop_name']}")
     print(f"stop_type: {error_dict['stop_type']}")
     print(f"a_time: {error_dict['a_time']}")
+
+
+def get_line_info(bus_info):
+    line_info = {}
+    for dict in bus_info:
+        bus_id = dict["bus_id"]
+        if bus_id in line_info.keys():
+            line_info[bus_id] += 1
+        else:
+            line_info[bus_id] = 1
+    print("Line names and number of stops:")
+    for key, value in line_info.items():
+        print(f"bus_id: {key}, stops: {value}")
+
+
+def main():
+    bus_info = json.loads(input())
+    get_line_info(bus_info)
 
 
 main()
