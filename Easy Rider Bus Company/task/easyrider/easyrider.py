@@ -1,5 +1,6 @@
 import json
 import re
+from collections import Counter
 
 
 def find_errors(bus_info):
@@ -61,9 +62,60 @@ def get_line_info(bus_info):
         print(f"bus_id: {key}, stops: {value}")
 
 
+def verify_stops(bus_info):
+    stops = {}
+    for dict in bus_info:
+        bus_id = dict["bus_id"]
+        stop_type = dict["stop_type"]
+        if bus_id in stops.keys():
+            stops[bus_id].append(stop_type)
+        else:
+            stops[bus_id] = [stop_type]
+    for line, stop in stops.items():
+        if stop.count("S") != 1 or stop.count("F") != 1:
+            print(f"There is no start or end stop for the line: {line}.")
+            return False
+    return True
+
+
+def count_stops(bus_info):
+    start_stops = set()
+    finish_stops = set()
+    transfer_stops = []
+    line_stops = {}
+
+    for dict in bus_info:
+        bus_id = dict["bus_id"]
+        stop_name = dict["stop_name"]
+        stop_type = dict["stop_type"]
+
+        if stop_type == "S":
+            start_stops.add(stop_name)
+        elif stop_type == "F":
+            finish_stops.add(stop_name)
+
+    # Find transfer stops (stops shared by at least 2 bus lines)
+        if bus_id in line_stops.keys():
+            line_stops[bus_id].add(stop_name)
+        else:
+            line_stops[bus_id] = {stop_name}
+    all_stops = []
+    for line, stop in line_stops.items():
+        all_stops += stop
+    stop_freq_dict = Counter(all_stops)
+    for stop, freq in stop_freq_dict.items():
+        if freq > 1:
+            transfer_stops.append(stop)
+
+    print(f"Start stops: {len(start_stops)} {sorted(list(start_stops))}")
+    print(f"Transfer stops: {len(transfer_stops)} {sorted(transfer_stops)}")
+    print(f"Finish stops: {len(finish_stops)} {sorted(list(finish_stops))}")
+
+
 def main():
     bus_info = json.loads(input())
-    get_line_info(bus_info)
+    if verify_stops(bus_info):
+        count_stops(bus_info)
 
 
 main()
