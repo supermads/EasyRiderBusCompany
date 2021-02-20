@@ -84,5 +84,9 @@ files:
         EasyRiderStage6('easyrider.easyrider').run_tests()
   learner_created: false
 feedback_link: https://hyperskill.org/projects/128/stages/685/implement#comment
-status: Unchecked
+status: Solved
+feedback:
+  message: Congratulations! Continue on <a href="https://hyperskill.org/projects/128/stages/685/implement">JetBrains
+    Academy</a>
+  time: Sat, 20 Feb 2021 01:09:52 UTC
 record: -1
