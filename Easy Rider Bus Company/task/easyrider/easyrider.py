@@ -100,7 +100,7 @@ def count_stops(bus_info):
         else:
             line_stops[bus_id] = {stop_name}
     all_stops = []
-    for line, stop in line_stops.items():
+    for stop in line_stops.values():
         all_stops += stop
     stop_freq_dict = Counter(all_stops)
     for stop, freq in stop_freq_dict.items():
@@ -112,10 +112,30 @@ def count_stops(bus_info):
     print(f"Finish stops: {len(finish_stops)} {sorted(list(finish_stops))}")
 
 
+def check_arrival_times(bus_info):
+    curr_line = 0
+    curr_time = ""
+    error_lines = []
+    print("Arrival time test:")
+    for dict in bus_info:
+        bus_id = dict["bus_id"]
+        a_time = dict["a_time"]
+        stop_name = dict["stop_name"]
+        if bus_id == curr_line and bus_id not in error_lines:
+            if a_time < curr_time:
+                print(f"bus_id line {bus_id}: wrong time on station {stop_name}")
+                error_lines.append(bus_id)
+            curr_time = a_time
+        else:
+            curr_line = bus_id
+            curr_time = a_time
+    if len(error_lines) == 0:
+        print("OK")
+
+
 def main():
     bus_info = json.loads(input())
-    if verify_stops(bus_info):
-        count_stops(bus_info)
+    check_arrival_times(bus_info)
 
 
 main()
